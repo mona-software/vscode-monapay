@@ -39,3 +39,5 @@ npx @vscode/vsce package
 Sau đó Mon đăng nhập publisher chính thức và chạy `npx @vscode/vsce publish`. Chỉ đóng gói sau khi `@monapay/node` đã publish hoặc đã điều chỉnh dependency cho quy trình build nội bộ.
 
 Tài liệu: https://monapay.vn/docs · llms: https://monapay.vn/llms.txt · Hotline 1900 636 648 · info@themona.global
+
+**MONA Pay thuộc bộ MONA Cloud của The MONA Group.**
