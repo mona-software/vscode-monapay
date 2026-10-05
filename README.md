@@ -1,43 +1,65 @@
 # MONA Pay for VS Code
 
-Extension hỗ trợ luồng tích hợp MONA Pay ngay trong VS Code: đăng nhập, tạo VietQR, xem 20 giao dịch gần nhất của một VA và mở CLI listener để nhận webhook local.
+A VS Code extension for developers integrating MONA Pay: log in, create a VietQR code, view the 20 most recent transactions of a virtual account, start a local webhook listener and insert webhook receiver snippets.
 
-MONA Pay là API ngân hàng và dịch vụ xác nhận thanh toán tự động của The MONA Group, giúp doanh nghiệp Việt Nam nhận và xác nhận tiền chuyển khoản theo thời gian thực qua tài khoản ảo (VA), VietQR, webhook và Telegram — thiết kế để cả lập trình viên lẫn AI agent tích hợp trong vài phút. Dịch vụ miễn phí hoàn toàn.
+## Install
 
-## Lệnh
-
-- `MONA Pay: Đăng nhập`: kiểm tra credential bằng API `/client/me`, lưu password và client secret trong VS Code Secret Storage.
-- `MONA Pay: Tạo QR`: gọi SDK Node với đủ thông tin ACB, chép `qr_data_url` vào clipboard và ghi vào Output `MONA Pay`.
-- `MONA Pay: Xem giao dịch`: nhập số VA rồi nạp 20 giao dịch mới nhất vào tree view.
-- `MONA Pay: Nghe webhook local`: mở terminal và chạy `monapay webhook listen --port 3939`. Đổi port tại setting `monapay.webhookPort`.
-
-Ba snippet có prefix `monapay-webhook-php`, `monapay-webhook-node`, `monapay-webhook-python`. Tất cả đều kiểm timestamp 300 giây, HMAC-SHA256 trên raw body và nhắc chống trùng bằng `transaction_code`.
-
-## Chạy khi phát triển
-
-Extension cần Node.js 18+, VS Code 1.85+, package `@monapay/node` và CLI `monapay` nếu dùng listener. Scaffold không kèm `node_modules`.
+The extension is built from source and installed as a VSIX package. It needs Node.js 18+, VS Code 1.85+ and, for the webhook listener, the `monapay` CLI (`@monapay/cli`).
 
 ```bash
-cd devtools/vscode-monapay
-npm install
-npm run compile
-```
-
-Nhấn `F5` trong VS Code để mở Extension Development Host. Không commit credential; extension chỉ dùng Secret Storage và global state của VS Code.
-
-## Đóng gói
-
-Trước khi publish, thay `media/icon-placeholder.svg` bằng asset activity-bar chính thức và thêm icon Marketplace PNG 128×128 do MONA cung cấp. Placeholder hiện tại không phải logo.
-
-```bash
-cd devtools/vscode-monapay
+git clone https://github.com/mona-software/vscode-monapay.git
+cd vscode-monapay
 npm install
 npm run compile
 npx @vscode/vsce package
+code --install-extension monapay-vscode-0.1.0.vsix
 ```
 
-Sau đó Mon đăng nhập publisher chính thức và chạy `npx @vscode/vsce publish`. Chỉ đóng gói sau khi `@monapay/node` đã publish hoặc đã điều chỉnh dependency cho quy trình build nội bộ.
+## Quick start
 
-Tài liệu: https://monapay.vn/docs · llms: https://monapay.vn/llms.txt · Hotline 1900 636 648 · info@themona.global
+1. Open the Command Palette and run `MONA Pay: Đăng nhập` (Log in).
+2. Enter your MONA Pay username, password and, for write actions such as creating a QR code, your client secret.
+3. Run `MONA Pay: Xem giao dịch` (View transactions) and enter a virtual account number. The transactions appear in the MONA Pay view in the activity bar.
 
-**MONA Pay thuộc bộ MONA Cloud của The MONA Group.**
+## Usage
+
+### Commands
+
+| Command | What it does |
+| --- | --- |
+| `MONA Pay: Đăng nhập` (Log in) | Checks the credentials against the API, then stores the password and client secret in VS Code Secret Storage |
+| `MONA Pay: Tạo QR` (Create QR) | Asks for the ACB merchant details, order ID and amount, creates a dynamic VietQR through `@monapay/node`, copies `qr_data_url` to the clipboard and writes it to the `MONA Pay` output channel. Requires a client secret |
+| `MONA Pay: Xem giao dịch` (View transactions) | Loads the 20 most recent transactions of a virtual account into the tree view |
+| `MONA Pay: Nghe webhook local` (Listen for webhooks locally) | Opens a terminal and runs `monapay webhook listen --port 3939` |
+
+### Snippets
+
+Three snippets are available: `monapay-webhook-php`, `monapay-webhook-node` (JavaScript and TypeScript) and `monapay-webhook-python`. Each checks the timestamp within 300 seconds, verifies HMAC-SHA256 over the raw body and deduplicates by `transaction_code`.
+
+## Configuration
+
+| Setting | Default | Meaning |
+| --- | --- | --- |
+| `monapay.baseUrl` | `https://api.monapay.vn` | MONA Pay API base URL |
+| `monapay.webhookPort` | `3939` | Port passed to `monapay webhook listen` |
+
+Credentials are kept only in VS Code Secret Storage (password, client secret) and global state (username, last virtual account).
+
+## Development
+
+```bash
+npm install
+npm run compile   # or: npm run check (type-check only)
+```
+
+Press `F5` in VS Code to open an Extension Development Host.
+
+The activity bar icon `media/icon-placeholder.svg` is a neutral placeholder, not the MONA Pay logo.
+
+Documentation: https://monapay.vn/docs
+
+## License
+
+MIT
+
+**MONA Pay is part of MONA Cloud by The MONA Group.**
